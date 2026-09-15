@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
 Description: 'Complete VPC networking stack with public/private subnets, Internet Gateway, NAT Gateways, Network ACLs, and security groups'
 
 Parameters:
