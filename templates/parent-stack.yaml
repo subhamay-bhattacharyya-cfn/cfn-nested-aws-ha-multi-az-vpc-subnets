@@ -192,7 +192,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      TemplateURL: !Sub 'https://s3.amazonaws.com/${TemplatesS3Bucket}/${TemplatesS3Prefix}/vpc.yaml'
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${TemplatesS3Bucket}/${TemplatesS3Prefix}/vpc-igw.yaml'
       Parameters:
         ApplicationPrefix: !Ref ApplicationPrefix
         EnvironmentName: !Ref EnvironmentName
@@ -243,7 +243,7 @@ Resources:
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
     Properties:
-      TemplateURL: !Sub 'https://s3.amazonaws.com/${TemplatesS3Bucket}/${TemplatesS3Prefix}/vpc-subnets.yaml'
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${TemplatesS3Bucket}/${TemplatesS3Prefix}/private-subnets.yaml'
       Parameters:
         ApplicationPrefix: !Ref ApplicationPrefix
         EnvironmentName: !Ref EnvironmentName

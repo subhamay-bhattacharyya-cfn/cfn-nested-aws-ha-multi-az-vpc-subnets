@@ -37,5 +37,7 @@
   "PublicSubnetNamePrefix": "myapp-web-pub-subnet",
   "PublicRouteTableNamePrefix": "myapp-web-pub-rt",
   "PrivateSubnetNamePrefix": "myapp-db-pvt-subnet",
-  "PrivateRouteTableNamePrefix": "myapp-db-pvt-rt"
+  "PrivateRouteTableNamePrefix": "myapp-db-pvt-rt",
+  "TemplatesS3Bucket": "subhamay-cfn-nested-templates-270453428528-devl-us-east-1",
+  "TemplatesS3Prefix": "cfn-nested-aws-ha-multi-az-vpc-subnets"
 }
