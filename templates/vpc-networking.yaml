@@ -42,8 +42,8 @@ Parameters:
 
   PublicSubnetCount:
     Type: Number
-    Description: Number of public subnets to create
-    MinValue: 1
+    Description: Number of public subnets to create (0 for private-only VPC)
+    MinValue: 0
     MaxValue: 4
 
   PublicSubnetCidrBlocks:
