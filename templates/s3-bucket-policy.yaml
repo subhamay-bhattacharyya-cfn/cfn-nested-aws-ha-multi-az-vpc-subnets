@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'Nested CloudFormation template to apply security policy to an S3 bucket (generic and integrated)'
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: ""
+    Description: "Name of the S3 bucket to apply policy to (if empty, will be constructed from ProjectName/BucketBaseName/environment/CiSuffix)"
+
+  ProjectName:
+    Type: String
+    Default: ""
+    Description: "Project name (used if BucketName is empty)"
+
+  BucketBaseName:
+    Type: String
+    Default: cfn-bucket
+    Description: "Base name for the S3 bucket (used if BucketName is empty)"
+
+  environment:
+    Type: String
+    Default: devl
+    Description: "Deployment environment (used if BucketName is empty)"
+
+  CiSuffix:
+    Type: String
+    Default: ""
+    Description: "CI suffix (used if BucketName is empty)"
+
+Conditions:
+  UseDirectBucketName: !Not [!Equals [!Ref BucketName, ""]]
+  HasCiSuffix: !Not [!Equals [!Ref CiSuffix, ""]]
+
+Resources:
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !If
+        - UseDirectBucketName
+        - !Ref BucketName
+        - !If
+          - HasCiSuffix
+          - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}-${CiSuffix}'
+          - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyUnencryptedObjectUploads
+            Effect: Deny
+            Principal: "*"
+            Action: s3:PutObject
+            Resource:
+              - !Sub
+                - "arn:${AWS::Partition}:s3:::${ResolvedBucketName}/*"
+                - ResolvedBucketName: !If
+                    - UseDirectBucketName
+                    - !Ref BucketName
+                    - !If
+                      - HasCiSuffix
+                      - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}-${CiSuffix}'
+                      - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}'
+            Condition:
+              StringNotEquals:
+                s3:x-amz-server-side-encryption: "AES256"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !Sub
+                - "arn:${AWS::Partition}:s3:::${ResolvedBucketName}"
+                - ResolvedBucketName: !If
+                    - UseDirectBucketName
+                    - !Ref BucketName
+                    - !If
+                      - HasCiSuffix
+                      - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}-${CiSuffix}'
+                      - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}'
+              - !Sub
+                - "arn:${AWS::Partition}:s3:::${ResolvedBucketName}/*"
+                - ResolvedBucketName: !If
+                    - UseDirectBucketName
+                    - !Ref BucketName
+                    - !If
+                      - HasCiSuffix
+                      - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}-${CiSuffix}'
+                      - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}'
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+Outputs:
+  BucketName:
+    Description: "Name of the bucket with policy applied"
+    Value: !If
+      - UseDirectBucketName
+      - !Ref BucketName
+      - !If
+        - HasCiSuffix
+        - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}-${CiSuffix}'
+        - !Sub '${ProjectName}-${BucketBaseName}-${AWS::AccountId}-${environment}-${AWS::Region}'
+    Export:
+      Name: !Sub "${AWS::StackName}-BucketName"
+
+  PolicyStatus:
+    Description: "Bucket policy enforcement status"
+    Value: "Applied"
+    Export:
+      Name: !Sub "${AWS::StackName}-PolicyStatus"
