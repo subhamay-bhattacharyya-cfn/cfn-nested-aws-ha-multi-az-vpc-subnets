@@ -520,7 +520,7 @@ Resources:
     Condition: CreateNATGateway1
     Properties:
       AllocationId: !GetAtt NATGatewayEIP1.AllocationId
-      SubnetId: !If [CreatePublicSubnet1, !Ref PublicSubnet1, !Ref 'AWS::NoValue']
+      SubnetId: !Ref PublicSubnet1
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-nat-gw-1'
@@ -547,7 +547,7 @@ Resources:
     Condition: CreateNATGateway2
     Properties:
       AllocationId: !GetAtt NATGatewayEIP2.AllocationId
-      SubnetId: !If [CreatePublicSubnet2, !Ref PublicSubnet2, !Ref 'AWS::NoValue']
+      SubnetId: !Ref PublicSubnet2
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-nat-gw-2'
@@ -574,7 +574,7 @@ Resources:
     Condition: CreateNATGateway3
     Properties:
       AllocationId: !GetAtt NATGatewayEIP3.AllocationId
-      SubnetId: !If [CreatePublicSubnet3, !Ref PublicSubnet3, !Ref 'AWS::NoValue']
+      SubnetId: !Ref PublicSubnet3
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-nat-gw-3'
@@ -601,7 +601,7 @@ Resources:
     Condition: CreateNATGateway4
     Properties:
       AllocationId: !GetAtt NATGatewayEIP4.AllocationId
-      SubnetId: !If [CreatePublicSubnet4, !Ref PublicSubnet4, !Ref 'AWS::NoValue']
+      SubnetId: !Ref PublicSubnet4
       Tags:
         - Key: Name
           Value: !Sub '${EnvironmentName}-nat-gw-4'
