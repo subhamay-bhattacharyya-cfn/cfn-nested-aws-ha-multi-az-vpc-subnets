@@ -13,6 +13,11 @@ Parameters:
     Type: String
     Description: Environment name prefix
 
+  CiSuffix:
+    Type: String
+    Description: CI suffix for unique stack identification (optional)
+    Default: ''
+
   VPCCidrBlock:
     Type: String
     Description: CIDR block for the VPC
