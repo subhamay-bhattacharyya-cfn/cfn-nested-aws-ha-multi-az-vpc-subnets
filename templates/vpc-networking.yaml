@@ -187,67 +187,41 @@ Conditions:
   # Public Subnet Conditions
   UseAppPrefixForPublicSubnets: !Equals [!Ref PublicSubnetNamePrefix, '']
   UseAppPrefixForPublicRT: !Equals [!Ref PublicRouteTableNamePrefix, '']
-  CreatePublicSubnet1: !Or
-    - !Equals [!Ref PublicSubnetCount, 1]
-    - !Equals [!Ref PublicSubnetCount, 2]
-    - !Equals [!Ref PublicSubnetCount, 3]
-    - !Equals [!Ref PublicSubnetCount, 4]
-  CreatePublicSubnet2: !Or
-    - !Equals [!Ref PublicSubnetCount, 2]
-    - !Equals [!Ref PublicSubnetCount, 3]
-    - !Equals [!Ref PublicSubnetCount, 4]
-  CreatePublicSubnet3: !Or
-    - !Equals [!Ref PublicSubnetCount, 3]
-    - !Equals [!Ref PublicSubnetCount, 4]
+  CreatePublicSubnet1: !Or [!Equals [!Ref PublicSubnetCount, 1], !Equals [!Ref PublicSubnetCount, 2], !Equals [!Ref PublicSubnetCount, 3], !Equals [!Ref PublicSubnetCount, 4]]
+  CreatePublicSubnet2: !Or [!Equals [!Ref PublicSubnetCount, 2], !Equals [!Ref PublicSubnetCount, 3], !Equals [!Ref PublicSubnetCount, 4]]
+  CreatePublicSubnet3: !Or [!Equals [!Ref PublicSubnetCount, 3], !Equals [!Ref PublicSubnetCount, 4]]
   CreatePublicSubnet4: !Equals [!Ref PublicSubnetCount, 4]
   MapPublicIp: !Equals [!Ref MapPublicIpOnLaunch, 'true']
 
   # Private Subnet Conditions
   UseAppPrefixForPrivateSubnets: !Equals [!Ref PrivateSubnetNamePrefix, '']
   UseAppPrefixForPrivateRT: !Equals [!Ref PrivateRouteTableNamePrefix, '']
-  CreatePrivateSubnet1: !Or
-    - !Equals [!Ref PrivateSubnetCount, 1]
-    - !Equals [!Ref PrivateSubnetCount, 2]
-    - !Equals [!Ref PrivateSubnetCount, 3]
-    - !Equals [!Ref PrivateSubnetCount, 4]
-  CreatePrivateSubnet2: !Or
-    - !Equals [!Ref PrivateSubnetCount, 2]
-    - !Equals [!Ref PrivateSubnetCount, 3]
-    - !Equals [!Ref PrivateSubnetCount, 4]
-  CreatePrivateSubnet3: !Or
-    - !Equals [!Ref PrivateSubnetCount, 3]
-    - !Equals [!Ref PrivateSubnetCount, 4]
+  CreatePrivateSubnet1: !Or [!Equals [!Ref PrivateSubnetCount, 1], !Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]
+  CreatePrivateSubnet2: !Or [!Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]
+  CreatePrivateSubnet3: !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]
   CreatePrivateSubnet4: !Equals [!Ref PrivateSubnetCount, 4]
 
   # NAT Gateway Conditions
   EnableNAT: !Equals [!Ref EnableNATGateway, 'true']
-  EnableHANAT: !And
-    - !Condition EnableNAT
-    - !Equals [!Ref EnableHighAvailabilityNAT, 'true']
-  CreateNATGateway1: !And
-    - !Condition EnableNAT
-    - !Condition CreatePrivateSubnet1
-  CreateNATGateway2: !And
-    - !Condition EnableHANAT
-    - !Condition CreatePrivateSubnet2
-  CreateNATGateway3: !And
-    - !Condition EnableHANAT
-    - !Condition CreatePrivateSubnet3
-  CreateNATGateway4: !And
-    - !Condition EnableHANAT
-    - !Condition CreatePrivateSubnet4
+  EnableHANAT: !And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']]
+  CreateNATGateway1: !And [!Equals [!Ref EnableNATGateway, 'true'], !Or [!Equals [!Ref PrivateSubnetCount, 1], !Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  CreateNATGateway2: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Or [!Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  CreateNATGateway3: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  CreateNATGateway4: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Equals [!Ref PrivateSubnetCount, 4]]
   CreateNACLs: !Equals [!Ref EnableNACLs, 'true']
+
+  # NACL Associations
+  PrivateSubnet1NACLAssociation: !And [!Equals [!Ref EnableNACLs, 'true'], !Or [!Equals [!Ref PrivateSubnetCount, 1], !Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  PrivateSubnet2NACLAssociation: !And [!Equals [!Ref EnableNACLs, 'true'], !Or [!Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  PrivateSubnet3NACLAssociation: !And [!Equals [!Ref EnableNACLs, 'true'], !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  PrivateSubnet4NACLAssociation: !And [!Equals [!Ref EnableNACLs, 'true'], !Equals [!Ref PrivateSubnetCount, 4]]
 
   # Security Group Conditions
   CreateHTTPRule: !Equals [!Ref AllowHTTPFromInternet, 'true']
   CreateHTTPSRule: !Equals [!Ref AllowHTTPSFromInternet, 'true']
   HasPublicCidr: !Not [!Equals [!Ref PublicSubnetCidr, '']]
-  AllowSSHFromPrivateWithCidr: !And
-    - !Equals [!Ref AllowSSHFromPrivate, 'true']
-    - !Not [!Equals [!Ref PrivateSubnetCidr, '']]
-  AllowPingFromPrivateWithCidr: !And
-    - !Equals [!Ref AllowPingFromPrivate, 'true']
-    - !Not [!Equals [!Ref PrivateSubnetCidr, '']]
+  AllowSSHFromPrivateWithCidr: !And [!Equals [!Ref AllowSSHFromPrivate, 'true'], !Not [!Equals [!Ref PrivateSubnetCidr, '']]]
+  AllowPingFromPrivateWithCidr: !And [!Equals [!Ref AllowPingFromPrivate, 'true'], !Not [!Equals [!Ref PrivateSubnetCidr, '']]]
 
 Resources:
   # ============================================================================
@@ -695,28 +669,28 @@ Resources:
 
   PrivateSubnet1NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: !And [CreateNACLs, CreatePrivateSubnet1]
+    Condition: PrivateSubnet1NACLAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet1
       NetworkAclId: !Ref PrivateNetworkAcl
 
   PrivateSubnet2NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: !And [CreateNACLs, CreatePrivateSubnet2]
+    Condition: PrivateSubnet2NACLAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet2
       NetworkAclId: !Ref PrivateNetworkAcl
 
   PrivateSubnet3NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: !And [CreateNACLs, CreatePrivateSubnet3]
+    Condition: PrivateSubnet3NACLAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet3
       NetworkAclId: !Ref PrivateNetworkAcl
 
   PrivateSubnet4NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: !And [CreateNACLs, CreatePrivateSubnet4]
+    Condition: PrivateSubnet4NACLAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet4
       NetworkAclId: !Ref PrivateNetworkAcl
