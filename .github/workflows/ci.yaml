@@ -49,7 +49,7 @@ jobs:
           echo "| Nested Templates S3 Bucket Name | ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }} |" >> $GITHUB_STEP_SUMMARY
 
   vpc-with-one-pvt-subnet-stack:
-    name: Deploy VPC with One Private Subnet Stack
+    name: Deploy Stack with VPC with One Private Subnet
     needs: setup-environment
     uses: subhamay-bhattacharyya-gha/cloudformation-deploy-wf/.github/workflows/cfn-deploy.yaml@v1.1.0
     with:
