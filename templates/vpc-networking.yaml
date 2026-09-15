@@ -201,12 +201,12 @@ Conditions:
   CreatePrivateSubnet3: !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]
   CreatePrivateSubnet4: !Equals [!Ref PrivateSubnetCount, 4]
 
-  # NAT Gateway Conditions
+  # NAT Gateway Conditions (require both public and private subnets)
   EnableNAT: !Equals [!Ref EnableNATGateway, 'true']
-  CreateNATGateway1: !And [!Equals [!Ref EnableNATGateway, 'true'], !Or [!Equals [!Ref PrivateSubnetCount, 1], !Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
-  CreateNATGateway2: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Or [!Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
-  CreateNATGateway3: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
-  CreateNATGateway4: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Equals [!Ref PrivateSubnetCount, 4]]
+  CreateNATGateway1: !And [!Equals [!Ref EnableNATGateway, 'true'], !Or [!Equals [!Ref PublicSubnetCount, 1], !Equals [!Ref PublicSubnetCount, 2], !Equals [!Ref PublicSubnetCount, 3], !Equals [!Ref PublicSubnetCount, 4]], !Or [!Equals [!Ref PrivateSubnetCount, 1], !Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  CreateNATGateway2: !And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true'], !Or [!Equals [!Ref PublicSubnetCount, 2], !Equals [!Ref PublicSubnetCount, 3], !Equals [!Ref PublicSubnetCount, 4]], !Or [!Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  CreateNATGateway3: !And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true'], !Or [!Equals [!Ref PublicSubnetCount, 3], !Equals [!Ref PublicSubnetCount, 4]], !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
+  CreateNATGateway4: !And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true'], !Equals [!Ref PublicSubnetCount, 4], !Equals [!Ref PrivateSubnetCount, 4]]
   CreateNACLs: !Equals [!Ref EnableNACLs, 'true']
 
   # NACL Associations
