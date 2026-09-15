@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nested template for VPC creation with Internet Gateway'
+
+Parameters:
+  ApplicationPrefix:
+    Type: String
+    Description: Application name prefix (used for VPC, subnet, and route table naming)
+    AllowedPattern: '^[a-zA-Z][-a-zA-Z0-9]*$'
+    ConstraintDescription: Must start with a letter and contain only alphanumeric characters and hyphens
+
+  EnvironmentName:
+    Type: String
+    Description: Environment name prefix
+
+  VPCCidrBlock:
+    Type: String
+    Description: CIDR block for the VPC
+    AllowedPattern: '^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$'
+    ConstraintDescription: Must be a valid CIDR block (e.g., 10.0.0.0/16)
+
+  EnableInternetGateway:
+    Type: String
+    Description: Enable Internet Gateway attachment to VPC
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+  EnableDnsHostnames:
+    Type: String
+    Description: Enable DNS hostnames and DNS support in VPC
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+Conditions:
+  CreateInternetGateway: !Equals [!Ref EnableInternetGateway, 'true']
+  EnableDns: !Equals [!Ref EnableDnsHostnames, 'true']
+
+Resources:
+  # ============================================================================
+  # VPC
+  # ============================================================================
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidrBlock
+      EnableDnsHostnames: !If [EnableDns, true, false]
+      EnableDnsSupport: !If [EnableDns, true, false]
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationPrefix}-vpc'
+
+  # ============================================================================
+  # Internet Gateway
+  # ============================================================================
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Condition: CreateInternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationPrefix}-igw'
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Condition: CreateInternetGateway
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+Outputs:
+  VPCId:
+    Description: VPC ID
+    Value: !Ref VPC
+    Export:
+      Name: !Sub '${EnvironmentName}-vpc-id'
+
+  VPCCidr:
+    Description: VPC CIDR Block
+    Value: !GetAtt VPC.CidrBlock
+    Export:
+      Name: !Sub '${EnvironmentName}-vpc-cidr'
+
+  InternetGatewayId:
+    Description: Internet Gateway ID
+    Condition: CreateInternetGateway
+    Value: !Ref InternetGateway
+    Export:
+      Name: !Sub '${EnvironmentName}-igw-id'

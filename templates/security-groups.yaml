@@ -1,0 +1,183 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nested template for security groups with configurable inbound rules'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Description: Environment name prefix
+
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID for security groups
+
+  PublicSubnetCidr:
+    Type: String
+    Description: CIDR block for public subnets (for private-to-public traffic rules)
+    Default: ''
+
+  PrivateSubnetCidr:
+    Type: String
+    Description: CIDR block for private subnets (for ingress rules)
+    Default: ''
+
+  AllowSSHFromPrivate:
+    Type: String
+    Description: Allow SSH (port 22) from private subnets to public subnets
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+  AllowPingFromPrivate:
+    Type: String
+    Description: Allow PING (ICMP) from private subnets to public subnets
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+  AllowHTTPFromInternet:
+    Type: String
+    Description: Allow HTTP (port 80) from internet
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+  AllowHTTPSFromInternet:
+    Type: String
+    Description: Allow HTTPS (port 443) from internet
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+Conditions:
+  CreateHTTPRule: !Equals [!Ref AllowHTTPFromInternet, 'true']
+  CreateHTTPSRule: !Equals [!Ref AllowHTTPSFromInternet, 'true']
+  HasPublicCidr: !Not [!Equals [!Ref PublicSubnetCidr, '']]
+  AllowSSHFromPrivateWithCidr: !And
+    - !Equals [!Ref AllowSSHFromPrivate, 'true']
+    - !Not [!Equals [!Ref PrivateSubnetCidr, '']]
+  AllowPingFromPrivateWithCidr: !And
+    - !Equals [!Ref AllowPingFromPrivate, 'true']
+    - !Not [!Equals [!Ref PrivateSubnetCidr, '']]
+
+Resources:
+  # ============================================================================
+  # Public Security Group
+  # ============================================================================
+
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${EnvironmentName}-public-sg'
+      GroupDescription: Security group for public subnets
+      VpcId: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-public-sg'
+
+  PublicSGIngressHTTP:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: CreateHTTPRule
+    Properties:
+      GroupId: !Ref PublicSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+      Description: Allow HTTP from internet
+
+  PublicSGIngressHTTPS:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: CreateHTTPSRule
+    Properties:
+      GroupId: !Ref PublicSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+      Description: Allow HTTPS from internet
+
+  PublicSGIngressSSHFromPrivate:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: AllowSSHFromPrivateWithCidr
+    Properties:
+      GroupId: !Ref PublicSecurityGroup
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: !Ref PrivateSubnetCidr
+      Description: Allow SSH from private subnets
+
+  PublicSGIngressPingFromPrivate:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: AllowPingFromPrivateWithCidr
+    Properties:
+      GroupId: !Ref PublicSecurityGroup
+      IpProtocol: icmp
+      FromPort: -1
+      ToPort: -1
+      CidrIp: !Ref PrivateSubnetCidr
+      Description: Allow PING from private subnets
+
+  PublicSGEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref PublicSecurityGroup
+      IpProtocol: -1
+      CidrIp: 0.0.0.0/0
+      Description: Allow all outbound traffic
+
+  # ============================================================================
+  # Private Security Group
+  # ============================================================================
+
+  PrivateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub '${EnvironmentName}-private-sg'
+      GroupDescription: Security group for private subnets
+      VpcId: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-private-sg'
+
+  PrivateSGIngressFromPublic:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: HasPublicCidr
+    Properties:
+      GroupId: !Ref PrivateSecurityGroup
+      IpProtocol: -1
+      CidrIp: !Ref PublicSubnetCidr
+      Description: Allow all traffic from public subnets
+
+  PrivateSGIngressFromSelf:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref PrivateSecurityGroup
+      IpProtocol: -1
+      SourceSecurityGroupId: !Ref PrivateSecurityGroup
+      Description: Allow all traffic from within private subnets
+
+  PrivateSGEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId: !Ref PrivateSecurityGroup
+      IpProtocol: -1
+      CidrIp: 0.0.0.0/0
+      Description: Allow all outbound traffic
+
+Outputs:
+  PublicSecurityGroupId:
+    Description: Public Security Group ID
+    Value: !Ref PublicSecurityGroup
+    Export:
+      Name: !Sub '${EnvironmentName}-public-sg-id'
+
+  PrivateSecurityGroupId:
+    Description: Private Security Group ID
+    Value: !Ref PrivateSecurityGroup
+    Export:
+      Name: !Sub '${EnvironmentName}-private-sg-id'

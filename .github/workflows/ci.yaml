@@ -48,8 +48,8 @@ jobs:
           echo "| AWS OIDC Role Name | ${{ vars.AWS_OIDC_ROLE_NAME }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Nested Templates S3 Bucket Name | ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }} |" >> $GITHUB_STEP_SUMMARY
 
-  deploy-s3-bucket-stack:
-    name: Deploy S3 Bucket Stack
+  vpc-with-one-pvt-subnet-stack:
+    name: Deploy VPC with One Private Subnet Stack
     needs: setup-environment
     uses: subhamay-bhattacharyya-gha/cloudformation-deploy-wf/.github/workflows/cfn-deploy.yaml@v1.1.0
     with:
@@ -59,6 +59,6 @@ jobs:
       aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
       oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
       cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
-      stack-name: s3-bucket-stack
-      parameters-file: templates/parameters.json
-      template-file: templates/s3-bucket.yaml
+      stack-name: vpc-with-one-pvt-subnet-stack
+      parameters-file: parameters/vpc-single-private-subnet.json
+      template-file: templates/parent-stack.yaml
