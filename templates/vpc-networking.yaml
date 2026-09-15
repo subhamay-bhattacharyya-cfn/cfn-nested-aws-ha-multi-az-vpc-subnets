@@ -186,6 +186,7 @@ Parameters:
 
 Conditions:
   # VPC and Gateway Conditions
+  HasCiSuffix: !Not [!Equals [!Ref CiSuffix, '']]
   CreateInternetGateway: !Equals [!Ref EnableInternetGateway, 'true']
   EnableDns: !Equals [!Ref EnableDnsHostnames, 'true']
 
@@ -240,7 +241,7 @@ Resources:
       EnableDnsSupport: !If [EnableDns, true, false]
       Tags:
         - Key: Name
-          Value: !Sub '${ApplicationPrefix}-vpc'
+          Value: !If [HasCiSuffix, !Sub '${ApplicationPrefix}-vpc-${CiSuffix}', !Sub '${ApplicationPrefix}-vpc']
 
   # ============================================================================
   # Internet Gateway
