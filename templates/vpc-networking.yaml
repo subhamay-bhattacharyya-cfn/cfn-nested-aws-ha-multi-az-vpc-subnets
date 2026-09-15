@@ -694,28 +694,28 @@ Resources:
 
   PrivateSubnet1NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: CreateNACLs
+    Condition: !And [CreateNACLs, CreatePrivateSubnet1]
     Properties:
       SubnetId: !Ref PrivateSubnet1
       NetworkAclId: !Ref PrivateNetworkAcl
 
   PrivateSubnet2NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: CreateNACLs
+    Condition: !And [CreateNACLs, CreatePrivateSubnet2]
     Properties:
       SubnetId: !Ref PrivateSubnet2
       NetworkAclId: !Ref PrivateNetworkAcl
 
   PrivateSubnet3NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: CreateNACLs
+    Condition: !And [CreateNACLs, CreatePrivateSubnet3]
     Properties:
       SubnetId: !Ref PrivateSubnet3
       NetworkAclId: !Ref PrivateNetworkAcl
 
   PrivateSubnet4NACLAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
-    Condition: CreateNACLs
+    Condition: !And [CreateNACLs, CreatePrivateSubnet4]
     Properties:
       SubnetId: !Ref PrivateSubnet4
       NetworkAclId: !Ref PrivateNetworkAcl
