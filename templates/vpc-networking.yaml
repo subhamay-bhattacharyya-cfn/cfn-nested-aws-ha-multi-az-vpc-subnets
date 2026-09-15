@@ -203,7 +203,6 @@ Conditions:
 
   # NAT Gateway Conditions
   EnableNAT: !Equals [!Ref EnableNATGateway, 'true']
-  EnableHANAT: !And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']]
   CreateNATGateway1: !And [!Equals [!Ref EnableNATGateway, 'true'], !Or [!Equals [!Ref PrivateSubnetCount, 1], !Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
   CreateNATGateway2: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Or [!Equals [!Ref PrivateSubnetCount, 2], !Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
   CreateNATGateway3: !And [!And [!Equals [!Ref EnableNATGateway, 'true'], !Equals [!Ref EnableHighAvailabilityNAT, 'true']], !Or [!Equals [!Ref PrivateSubnetCount, 3], !Equals [!Ref PrivateSubnetCount, 4]]]
@@ -640,8 +639,8 @@ Resources:
       RuleAction: allow
       CidrBlock: !Ref VPCCidrBlock
       PortRange:
-        FromPort: 0
-        ToPort: 65535
+        From: 0
+        To: 65535
 
   PrivateNACLInboundEphemeral:
     Type: AWS::EC2::NetworkAclEntry
@@ -653,8 +652,8 @@ Resources:
       RuleAction: allow
       CidrBlock: 0.0.0.0/0
       PortRange:
-        FromPort: 1024
-        ToPort: 65535
+        From: 1024
+        To: 65535
 
   PrivateNACLOutboundAll:
     Type: AWS::EC2::NetworkAclEntry
