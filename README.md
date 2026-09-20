@@ -44,6 +44,7 @@ The template creates a complete private subnet tier with:
 ### Why One Route Table Per Subnet?
 
 This design enables:
+
 - **Independent AZ routing** — Different NAT Gateways in different AZs
 - **Granular traffic control** — Fine-grained routing policies per availability zone
 - **Compliance requirements** — Predictable traffic paths for audit trails
@@ -51,17 +52,21 @@ This design enables:
 ### Multi-AZ NAT Patterns
 
 **Single NAT (Cost-Optimized):**
+
 ```yaml
 EnableNATGateway: "true"
 EnableHighAvailabilityNAT: "false"  # One NAT in first AZ
 ```
+
 Lower cost but single point of failure. Suitable for development/test environments.
 
 **Multi-AZ NAT (High Availability):**
+
 ```yaml
 EnableNATGateway: "true"
 EnableHighAvailabilityNAT: "true"   # One NAT per AZ
 ```
+
 Redundancy with no cross-AZ data transfer charges. Recommended for production.
 
 ## Template Files
@@ -77,7 +82,7 @@ Redundancy with no cross-AZ data transfer charges. Recommended for production.
 ## Parameters
 
 | Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
+| ----------- | ------ | --------- | ------------- |
 | `EnvironmentName` | String | Yes | Environment name prefix (e.g., `prod`, `staging`, `dev`) |
 | `VPCId` | AWS::EC2::VPC::Id | Yes | Existing VPC to attach subnets to |
 | `SubnetCount` | Number | Yes | Number of private subnets (1-4, one per AZ) |
