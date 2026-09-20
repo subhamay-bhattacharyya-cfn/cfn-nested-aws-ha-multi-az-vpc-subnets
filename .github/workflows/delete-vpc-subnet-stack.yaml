@@ -1,15 +1,22 @@
-name: Deploy CloudFormation Stack
-description: Deploy CloudFormation VPC Subnet Stack run by {{ github.actor }}
+name: Delete VPC Subnet Stack
+description: Delete CloudFormation VPC Subnet Stack run by {{ github.actor }}
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - feature/**
-  #     - bug/**
-  #   paths:
-  #     - 'templates/**'
-  #     - .github/workflows/ci.yaml
+    inputs:
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        default: 'devl'
+      stack-type:
+        description: 'The type of stack to deploy'
+        required: true
+        type: choice
+        options:
+          - vpc-single-private-subnet
+          - vpc-single-public-subnet
+          - vpc-two-public-private-subnets
+          - vpc-two-public-four-private-subnets
 
 
 permissions:
@@ -28,7 +35,29 @@ jobs:
       aws-account-id: ${{ steps.set-env.outputs.aws-account-id }}
       oidc-role-name: ${{ steps.set-env.outputs.oidc-role-name }}
       s3-bucket: ${{ steps.set-env.outputs.s3-bucket }}
+      stack-name: ${{ steps.set-stack-name.outputs.stack-name }}
     steps:
+      - name: Set stack name based on stack type
+        id: set-stack-name
+        run: |
+          case "${{ github.event.inputs.stack-type }}" in
+            vpc-single-private-subnet)
+              echo "stack-name=vpc-with-one-pvt-subnet-stack" >> $GITHUB_OUTPUT
+              ;;
+            vpc-single-public-subnet)
+              echo "stack-name=vpc-with-one-public-subnet-stack" >> $GITHUB_OUTPUT
+              ;;
+            vpc-two-public-private-subnets)
+              echo "stack-name=vpc-with-two-public-private-subnets-stack" >> $GITHUB_OUTPUT
+              ;;
+            vpc-two-public-four-private-subnets)
+              echo "stack-name=vpc-with-two-public-four-private-subnets-stack" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "stack-name=vpc-stack" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
       - name: Read environment-specific variables
         id: set-env
         run: |
@@ -47,25 +76,11 @@ jobs:
           echo "| AWS Account ID | ${{ vars.AWS_ACCOUNT_ID }} |" >> $GITHUB_STEP_SUMMARY
           echo "| AWS OIDC Role Name | ${{ vars.AWS_OIDC_ROLE_NAME }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Nested Templates S3 Bucket Name | ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Stack Name | ${{ steps.set-stack-name.outputs.stack-name }} |" >> $GITHUB_STEP_SUMMARY
 
-  vpc-subnet-stack:
-    name: VPC Subnet Stack
-    needs: setup-environment
-    uses: subhamay-bhattacharyya-gha/cfn-deploy-wf/.github/workflows/cfn-deploy.yaml@v1.2.0
-    with:
-      environment: ${{ needs.setup-environment.outputs.environment }}
-      concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
-      aws-region: ${{ needs.setup-environment.outputs.aws-region }}
-      aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
-      oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
-      cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
-      stack-name: vpc-with-one-pvt-subnet-stack
-      parameters-file: parameters/vpc-single-private-subnet.json
-      template-file: templates/vpc-networking.yaml
-
-  cleanup-vpc-subnet-stack:
+  delete-vpc-subnet-stack:
     name: Cleanup VPC Subnet Stack
-    needs: [setup-environment, vpc-subnet-stack]
+    needs: setup-environment
     uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@v1.2.0
     with:
       environment: ${{ needs.setup-environment.outputs.environment }}
@@ -74,4 +89,4 @@ jobs:
       aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
       oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
       cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
-      stack-name: vpc-with-one-pvt-subnet-stack
+      stack-name: ${{ needs.setup-environment.outputs.stack-name }}

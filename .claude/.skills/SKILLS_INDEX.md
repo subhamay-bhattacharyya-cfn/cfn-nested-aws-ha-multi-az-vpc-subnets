@@ -7,7 +7,7 @@ metadata:
 
 # Skills Index
 
-Reference guide for the skills available in the cloudformation-template repository.
+Reference guide for the skills available in the cfn-nested-aws-ha-multi-az-vpc-subnets repository.
 
 ## Available Skills
 
