@@ -12,6 +12,9 @@
 <!-- Row 4: Repository Info -->
 [![Files](https://img.shields.io/github/directory-file-count/subhamay-bhattacharyya-cfn/cfn-nested-aws-ha-multi-az-vpc-subnets)](https://github.com/subhamay-bhattacharyya-cfn/cfn-nested-aws-ha-multi-az-vpc-subnets)&nbsp;[![Repo Size](https://img.shields.io/github/repo-size/subhamay-bhattacharyya-cfn/cfn-nested-aws-ha-multi-az-vpc-subnets)](https://github.com/subhamay-bhattacharyya-cfn/cfn-nested-aws-ha-multi-az-vpc-subnets)&nbsp;[![Release Date](https://img.shields.io/github/release-date/subhamay-bhattacharyya-cfn/cfn-nested-aws-ha-multi-az-vpc-subnets)](https://github.com/subhamay-bhattacharyya-cfn/cfn-nested-aws-ha-multi-az-vpc-subnets/releases)
 
+<!-- Row 5: Custom Metrics -->
+[![Custom Endpoint](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/bsubhamay/ecdcf4fd75b99f1f6dd3162737bec745/raw/cfn-nested-aws-ha-multi-az-vpc-subnets.json?)](https://gist.github.com/bsubhamay/ecdcf4fd75b99f1f6dd3162737bec745)
+
 ---
 
 ## Overview
