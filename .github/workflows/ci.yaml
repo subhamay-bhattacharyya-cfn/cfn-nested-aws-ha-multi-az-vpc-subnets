@@ -51,7 +51,7 @@ jobs:
   deploy-s3-bucket-stack:
     name: Deploy S3 Bucket Stack
     needs: setup-environment
-    uses: subhamay-bhattacharyya-gha/cloudformation-deploy-wf/.github/workflows/cfn-deploy.yaml@v1.1.0
+    uses: subhamay-bhattacharyya-gha/cloudformation-deploy-wf/.github/workflows/cfn-deploy.yaml@v1.2.0
     with:
       environment: ${{ needs.setup-environment.outputs.environment }}
       concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
