@@ -62,7 +62,7 @@ jobs:
       oidc-role-name: ${{ needs.setup-environment.outputs.oidc-role-name }}
       cfn-templates-s3-bucket: ${{ needs.setup-environment.outputs.s3-bucket }}
       stack-name: ${{ needs.setup-environment.outputs.stack-name }}
-      parameters-file: parameters/vpc-single-private-subnet.json
+      parameters-file: parameters/vpc-single-private-subnet-cfn.json
       template-file: templates/vpc-networking.yaml
 
   delete-vpc-subnet-stack:
