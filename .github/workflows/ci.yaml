@@ -73,5 +73,5 @@ jobs:
       aws-region: ${{ needs.setup-environment.outputs.aws-region }}
       aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
       oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
-      cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
+      # cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
       stack-name: vpc-with-one-pvt-subnet-stack
