@@ -3,13 +3,13 @@ description: Deploy CloudFormation VPC Subnet Stack run by {{ github.actor }}
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - feature/**
-  #     - bug/**
-  #   paths:
-  #     - 'templates/**'
-  #     - .github/workflows/ci.yaml
+  push:
+    branches:
+      - feature/**
+      - bug/**
+    paths:
+      - 'templates/**'
+      - .github/workflows/ci.yaml
 
 
 permissions:
@@ -66,7 +66,7 @@ jobs:
   cleanup-vpc-subnet-stack:
     name: Cleanup VPC Subnet Stack
     needs: [setup-environment, vpc-subnet-stack]
-    uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@v1.2.0
+    uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@feature/GHA-0001-initial-release-cloudform
     with:
       environment: ${{ needs.setup-environment.outputs.environment }}
       concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
