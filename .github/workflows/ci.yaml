@@ -42,7 +42,7 @@ jobs:
           echo "| AWS_OIDC_ROLE_NAME | \`${{ vars.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| CFN_NESTED_TEMPLATES_S3_BUCKET_NAME | \`${{ vars.CFN_TEMPLATES_S3_BUCKET }}\` |" >> $GITHUB_STEP_SUMMARY
 
-  ci:
+  ci-build:
     name: CI Build
     needs: print-env
     uses: subhamay-bhattacharyya-gha/cfn-ci-build-reusable-wf/.github/workflows/ci.yaml@feature/GHA-0001-implement-ci-build-reusab
