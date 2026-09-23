@@ -17,8 +17,8 @@ on:
       - 'templates/**'
       - .github/workflows/ci.yaml
 
-env:
-  environment: ci
+# env:
+#   environment: ci
 
 permissions:
   actions: write
@@ -29,7 +29,7 @@ jobs:
   print-env:
     name: Print Environment Variables
     runs-on: ubuntu-latest
-    # environment: ci
+    environment: ci
     steps:
       - name: Print environment variables
         run: |
@@ -43,6 +43,7 @@ jobs:
           echo "| CFN_NESTED_TEMPLATES_S3_BUCKET_NAME | \`${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
 
   ci-build:
+    name: CI Build
     # environment: ci
     needs: print-env
     uses: subhamay-bhattacharyya-gha/cfn-ci-build-reusable-wf/.github/workflows/ci.yaml@feature/GHA-0001-implement-ci-build-reusab
