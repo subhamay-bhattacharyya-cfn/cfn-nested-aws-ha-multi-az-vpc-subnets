@@ -29,7 +29,7 @@ jobs:
   print-env:
     name: Print Environment Variables
     runs-on: ubuntu-latest
-    environment: ci
+    # environment: ci
     steps:
       - name: Print environment variables
         run: |
