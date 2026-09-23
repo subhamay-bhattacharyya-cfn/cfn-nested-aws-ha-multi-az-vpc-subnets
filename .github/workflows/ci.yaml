@@ -44,11 +44,11 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Variable | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | ${{ vars.AWS_ENVIRONMENT }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS Region | ${{ vars.AWS_REGION }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS Account ID | ${{ vars.AWS_ACCOUNT_ID }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS OIDC Role Name | ${{ vars.AWS_OIDC_ROLE_NAME }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Nested Templates S3 Bucket Name | ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | \`${{ vars.AWS_ENVIRONMENT }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AWS Region | \`${{ vars.AWS_REGION }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AWS Account ID | \`${{ vars.AWS_ACCOUNT_ID }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AWS OIDC Role Name | \`${{ vars.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Nested Templates S3 Bucket Name | \`${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
 
   vpc-subnet-stack:
     name: Create VPC Subnet Stack
