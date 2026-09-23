@@ -29,7 +29,7 @@ jobs:
     with:
       environment: ci
       stack-name: vpc-networking-vpc-only
-      template-file: templates/vpc-subnets.yaml
+      template-file: templates/vpc-networking.yaml
       parameters-file: parameters/vpc-networking-vpc-only.json
 # setup-environment:
   #   name: Setup Environment Variables
