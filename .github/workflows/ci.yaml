@@ -1,5 +1,5 @@
-name: Deploy CloudFormation Stack
-description: Deploy CloudFormation VPC Subnet Stack run by {{ github.actor }}
+name: CI Build Workflow
+description: CI Build Workflow for CloudFormation VPC Subnet Stack run by {{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -17,62 +17,75 @@ permissions:
   contents: read
   id-token: write
 
+
 jobs:
-  setup-environment:
-    name: Setup Environment Variables
+  ci:
     runs-on: ubuntu-latest
     environment: ci
-    outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
-      aws-region: ${{ steps.set-env.outputs.aws-region }}
-      aws-account-id: ${{ steps.set-env.outputs.aws-account-id }}
-      oidc-role-name: ${{ steps.set-env.outputs.oidc-role-name }}
-      s3-bucket: ${{ steps.set-env.outputs.s3-bucket }}
-      stack-name: ${{ steps.set-env.outputs.stack-name }}
-    steps:
-      - name: Read environment-specific variables
-        id: set-env
-        run: |
-          echo "environment=${{ vars.AWS_ENVIRONMENT }}" >> $GITHUB_OUTPUT
-          echo "aws-region=${{ vars.AWS_REGION }}" >> $GITHUB_OUTPUT
-          echo "aws-account-id=${{ vars.AWS_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
-          echo "oidc-role-name=${{ vars.AWS_OIDC_ROLE_NAME }}" >> $GITHUB_OUTPUT
-          echo "s3-bucket=${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}" >> $GITHUB_OUTPUT
-          echo "stack-name=app-multi-tier-vpc-ci-stack" >> $GITHUB_OUTPUT
-
-          echo "## Environment Configuration" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Variable | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | \`${{ vars.AWS_ENVIRONMENT }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS Region | \`${{ vars.AWS_REGION }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS Account ID | \`${{ vars.AWS_ACCOUNT_ID }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS OIDC Role Name | \`${{ vars.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Nested Templates S3 Bucket Name | \`${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
-
-  vpc-subnet-stack:
-    name: Create VPC Subnet Stack
-    needs: setup-environment
-    uses: subhamay-bhattacharyya-gha/cfn-deploy-wf/.github/workflows/cfn-deploy.yaml@feature/GHA-0016-upgrade-cfn-deploy-action
+    uses: subhamay-bhattacharyya-gha/cfn-ci-build-reusable-wf/.github/workflows/ci.yaml@feature/GHA-0001-implement-ci-build-reusab
     with:
-      environment: ${{ needs.setup-environment.outputs.environment }}
-      concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
-      aws-region: ${{ needs.setup-environment.outputs.aws-region }}
-      aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
-      oidc-role-name: ${{ needs.setup-environment.outputs.oidc-role-name }}
-      cfn-templates-s3-bucket: ${{ needs.setup-environment.outputs.s3-bucket }}
-      stack-name: ${{ needs.setup-environment.outputs.stack-name }}
-      parameters-file: parameters/vpc-networking-private-public-subnates.json
-      template-file: templates/vpc-networking.yaml
+      aws-region: ${{ vars.AWS_REGION }}
+      aws-account-id: ${{ vars.AWS_ACCOUNT_ID }}
+      oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
+      cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
+      stack-name: vpc-networking-vpc-only
+      template-file: templates/vpc-subnets.yaml
+      parameters-file: parameters/vpc-networking-vpc-only.json
+# setup-environment:
+  #   name: Setup Environment Variables
+  #   runs-on: ubuntu-latest
+  #   environment: ci
+  #   outputs:
+  #     environment: ${{ steps.set-env.outputs.environment }}
+  #     aws-region: ${{ steps.set-env.outputs.aws-region }}
+  #     aws-account-id: ${{ steps.set-env.outputs.aws-account-id }}
+  #     oidc-role-name: ${{ steps.set-env.outputs.oidc-role-name }}
+  #     s3-bucket: ${{ steps.set-env.outputs.s3-bucket }}
+  #     stack-name: ${{ steps.set-env.outputs.stack-name }}
+  #   steps:
+  #     - name: Read environment-specific variables
+  #       id: set-env
+  #       run: |
+  #         echo "environment=${{ vars.AWS_ENVIRONMENT }}" >> $GITHUB_OUTPUT
+  #         echo "aws-region=${{ vars.AWS_REGION }}" >> $GITHUB_OUTPUT
+  #         echo "aws-account-id=${{ vars.AWS_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
+  #         echo "oidc-role-name=${{ vars.AWS_OIDC_ROLE_NAME }}" >> $GITHUB_OUTPUT
+  #         echo "s3-bucket=${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}" >> $GITHUB_OUTPUT
+  #         echo "stack-name=app-multi-tier-vpc-ci-stack" >> $GITHUB_OUTPUT
 
-  delete-vpc-subnet-stack:
-    name: Delete VPC Subnet Stack
-    needs: [setup-environment, vpc-subnet-stack]
-    uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@feature/GHA-0001-initial-release-cloudform
-    with:
-      environment: ${{ needs.setup-environment.outputs.environment }}
-      concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
-      aws-region: ${{ needs.setup-environment.outputs.aws-region }}
-      aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
-      oidc-role-name: ${{ needs.setup-environment.outputs.oidc-role-name }}
-      stack-name: ${{ needs.setup-environment.outputs.stack-name }}
+  #         echo "## Environment Configuration" >> $GITHUB_STEP_SUMMARY
+  #         echo "" >> $GITHUB_STEP_SUMMARY
+  #         echo "| Variable | Value |" >> $GITHUB_STEP_SUMMARY
+  #         echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+  #         echo "| Environment | \`${{ vars.AWS_ENVIRONMENT }}\` |" >> $GITHUB_STEP_SUMMARY
+  #         echo "| AWS Region | \`${{ vars.AWS_REGION }}\` |" >> $GITHUB_STEP_SUMMARY
+  #         echo "| AWS Account ID | \`${{ vars.AWS_ACCOUNT_ID }}\` |" >> $GITHUB_STEP_SUMMARY
+  #         echo "| AWS OIDC Role Name | \`${{ vars.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+  #         echo "| Nested Templates S3 Bucket Name | \`${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+
+  # vpc-subnet-stack:
+  #   name: Create VPC Subnet Stack
+  #   needs: setup-environment
+  #   uses: subhamay-bhattacharyya-gha/cfn-deploy-wf/.github/workflows/cfn-deploy.yaml@feature/GHA-0016-upgrade-cfn-deploy-action
+  #   with:
+  #     environment: ${{ needs.setup-environment.outputs.environment }}
+  #     concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
+  #     aws-region: ${{ needs.setup-environment.outputs.aws-region }}
+  #     aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
+  #     oidc-role-name: ${{ needs.setup-environment.outputs.oidc-role-name }}
+  #     cfn-templates-s3-bucket: ${{ needs.setup-environment.outputs.s3-bucket }}
+  #     stack-name: ${{ needs.setup-environment.outputs.stack-name }}
+  #     parameters-file: parameters/vpc-networking-private-public-subnates.json
+  #     template-file: templates/vpc-networking.yaml
+
+  # delete-vpc-subnet-stack:
+  #   name: Delete VPC Subnet Stack
+  #   needs: [setup-environment, vpc-subnet-stack]
+  #   uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@feature/GHA-0001-initial-release-cloudform
+  #   with:
+  #     environment: ${{ needs.setup-environment.outputs.environment }}
+  #     concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
+  #     aws-region: ${{ needs.setup-environment.outputs.aws-region }}
+  #     aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
+  #     oidc-role-name: ${{ needs.setup-environment.outputs.oidc-role-name }}
+  #     stack-name: ${{ needs.setup-environment.outputs.stack-name }}
