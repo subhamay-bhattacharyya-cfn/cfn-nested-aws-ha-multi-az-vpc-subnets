@@ -201,31 +201,218 @@ aws cloudformation update-stack \
   --region us-east-1
 ```
 
+## Use Cases & Parameter Combinations
+
+### Use Case 1: High-Availability Production VPC (4-AZ)
+
+**Scenario:** Multi-region capable production environment with maximum redundancy and isolation
+
+**Key Parameters:**
+
+- `PublicSubnetCount: 4` — Public tier across all AZs for load balancers
+- `PrivateSubnetCount: 4` — Private tier across all AZs for application servers
+- `EnableNATGateway: true` + `EnableHighAvailabilityNAT: true` — One NAT per AZ, no cross-AZ data transfer charges
+- `EnableNACLs: true` — Stateless firewall rules for defense-in-depth
+- `EnableDnsHostnames: true` — Required for service discovery
+- `MapPublicIpOnLaunch: false` — Explicit control over public IPs (use Elastic IPs)
+
+**Benefits:**
+
+- ✅ Zero single points of failure (all AZs independent)
+- ✅ Optimal data transfer costs (NAT traffic stays in AZ)
+- ✅ Compliance-friendly (predictable routing paths)
+- ✅ Supports auto-scaling across AZs
+
+---
+
+### Use Case 2: Cost-Optimized Development VPC (2-AZ with Single NAT)
+
+**Scenario:** Development environment with redundancy but minimal costs
+
+**Key Parameters:**
+
+- `PublicSubnetCount: 2` — Public tier in 2 AZs for HA
+- `PrivateSubnetCount: 2` — Private tier in 2 AZs
+- `EnableNATGateway: true` + `EnableHighAvailabilityNAT: false` — Single NAT Gateway (first AZ only)
+- `EnableNACLs: true` — Basic security isolation
+- `EnableDnsHostnames: true` — Standard setup
+
+**Benefits:**
+
+- ✅ Lower costs (only 1 NAT Gateway + 1 Elastic IP)
+- ✅ Adequate HA for non-critical workloads
+- ✅ Cross-AZ data transfer charges apply but acceptable for dev
+- ✅ Quick provisioning and tear-down
+
+---
+
+### Use Case 3: Private-Only VPC (No Internet Egress)
+
+**Scenario:** Isolated environment for databases, caches, or airgapped deployments
+
+**Key Parameters:**
+
+- `PublicSubnetCount: 0` — No public tier
+- `PrivateSubnetCount: 3` — Private tier in 3 AZs only
+- `EnableInternetGateway: false` — No Internet Gateway
+- `EnableNATGateway: false` — No internet egress
+- `EnableNACLs: true` — Network isolation
+- `EnableDnsHostnames: true` — Internal service discovery
+
+**Benefits:**
+
+- ✅ Ultra-secure (zero internet exposure)
+- ✅ Lowest cost (no NAT/IGW charges)
+- ✅ Ideal for backend databases and data stores
+- ✅ VPC endpoints used for AWS service access
+
+---
+
+### Use Case 4: Web Application Tier (Public+Private with HTTP/HTTPS)
+
+**Scenario:** Classic 3-tier architecture with load balancers and app servers
+
+**Key Parameters:**
+
+- `PublicSubnetCount: 2` — Public tier for ALB/NLB load balancers
+- `PrivateSubnetCount: 2` — Private tier for application servers
+- `EnableNATGateway: true` + `EnableHighAvailabilityNAT: true` — Multi-AZ NAT for app egress
+- `AllowHTTPFromInternet: true` — Port 80 allowed
+- `AllowHTTPSFromInternet: true` — Port 443 allowed
+- `AllowSSHFromPrivate: true` — SSH from private to public bastion hosts
+- `MapPublicIpOnLaunch: false` — Use Elastic IPs on NAT Gateways instead
+
+**Benefits:**
+
+- ✅ Proper network segmentation (public/private)
+- ✅ Load balancers in public subnets, apps in private
+- ✅ HA across AZs with independent NATs
+- ✅ Firewall rules allow standard web protocols
+
+---
+
+### Use Case 5: Single-AZ Development Cluster (Minimal)
+
+**Scenario:** Rapid prototyping or single-AZ development environment
+
+**Key Parameters:**
+
+- `PublicSubnetCount: 1` — Single public subnet
+- `PrivateSubnetCount: 1` — Single private subnet
+- `AvailabilityZone: us-east-1a` (any single AZ)
+- `EnableNATGateway: true` + `EnableHighAvailabilityNAT: false` — Single NAT (if needed)
+- `EnableNACLs: false` — Disabled for simpler troubleshooting
+- `MapPublicIpOnLaunch: true` — Auto-assign public IPs
+
+**Benefits:**
+
+- ✅ Minimal resource consumption
+- ✅ Fastest deployment
+- ✅ Suitable for POCs and experiments
+- ✅ Easy to destroy and recreate
+
+---
+
+### Use Case 6: Microservices Platform (3-AZ with Service Discovery)
+
+**Scenario:** Kubernetes or container orchestration platform with internal DNS
+
+**Key Parameters:**
+
+- `PublicSubnetCount: 3` — Public tier for ingress controllers
+- `PrivateSubnetCount: 3` — Private tier for container workloads
+- `EnableDnsHostnames: true` — Required for service discovery (e.g., EKS, ECS)
+- `EnableNATGateway: true` + `EnableHighAvailabilityNAT: true` — Multi-AZ NAT for outbound
+- `AllowHTTPFromInternet: true` — Ingress on port 80
+- `AllowHTTPSFromInternet: true` — Ingress on port 443
+- `EnableNACLs: true` — Network policy enforcement
+
+**Benefits:**
+
+- ✅ DNS resolution enables service discovery
+- ✅ Multi-AZ deployment for container orchestrators
+- ✅ Public ingress controllers in public subnets
+- ✅ Pod/container workloads in private subnets
+
+---
+
 ## Example Parameter Files
 
-### 2-AZ Deployment with Multi-AZ NAT (Production)
+### 4-AZ Production with Multi-AZ NAT
 
 ```json
 [
+  {
+    "ParameterKey": "ApplicationPrefix",
+    "ParameterValue": "myapp"
+  },
   {
     "ParameterKey": "EnvironmentName",
     "ParameterValue": "prod"
   },
   {
-    "ParameterKey": "VPCId",
-    "ParameterValue": "vpc-0123456789abcdef0"
+    "ParameterKey": "VPCCidrBlock",
+    "ParameterValue": "10.0.0.0/16"
   },
   {
-    "ParameterKey": "SubnetCount",
-    "ParameterValue": "2"
+    "ParameterKey": "EnableInternetGateway",
+    "ParameterValue": "true"
   },
   {
-    "ParameterKey": "SubnetCidrBlocks",
-    "ParameterValue": "10.0.1.0/24,10.0.2.0/24"
+    "ParameterKey": "EnableDnsHostnames",
+    "ParameterValue": "true"
   },
   {
-    "ParameterKey": "AvailabilityZones",
-    "ParameterValue": "us-east-1a,us-east-1b"
+    "ParameterKey": "PublicSubnetCount",
+    "ParameterValue": "4"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidrBlocks",
+    "ParameterValue": "10.0.1.0/24,10.0.2.0/24,10.0.3.0/24,10.0.4.0/24"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ1",
+    "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ2",
+    "ParameterValue": "us-east-1b"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ3",
+    "ParameterValue": "us-east-1c"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ4",
+    "ParameterValue": "us-east-1d"
+  },
+  {
+    "ParameterKey": "MapPublicIpOnLaunch",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCount",
+    "ParameterValue": "4"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidrBlocks",
+    "ParameterValue": "10.0.11.0/24,10.0.12.0/24,10.0.13.0/24,10.0.14.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ1",
+    "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ2",
+    "ParameterValue": "us-east-1b"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ3",
+    "ParameterValue": "us-east-1c"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ4",
+    "ParameterValue": "us-east-1d"
   },
   {
     "ParameterKey": "EnableNATGateway",
@@ -236,39 +423,87 @@ aws cloudformation update-stack \
     "ParameterValue": "true"
   },
   {
-    "ParameterKey": "PublicSubnetIds",
-    "ParameterValue": "subnet-public-1a,subnet-public-1b"
+    "ParameterKey": "EnableNACLs",
+    "ParameterValue": "true"
   },
   {
-    "ParameterKey": "EnableNACLs",
+    "ParameterKey": "AllowHTTPFromInternet",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "AllowHTTPSFromInternet",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "AllowSSHFromPrivate",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "AllowPingFromPrivate",
     "ParameterValue": "true"
   }
 ]
 ```
 
-### Single NAT Deployment (Development)
+### 2-AZ Development with Single NAT (Cost-Optimized)
 
 ```json
 [
+  {
+    "ParameterKey": "ApplicationPrefix",
+    "ParameterValue": "devapp"
+  },
   {
     "ParameterKey": "EnvironmentName",
     "ParameterValue": "dev"
   },
   {
-    "ParameterKey": "VPCId",
-    "ParameterValue": "vpc-0987654321fedcba0"
+    "ParameterKey": "VPCCidrBlock",
+    "ParameterValue": "10.1.0.0/16"
   },
   {
-    "ParameterKey": "SubnetCount",
-    "ParameterValue": "1"
+    "ParameterKey": "EnableInternetGateway",
+    "ParameterValue": "true"
   },
   {
-    "ParameterKey": "SubnetCidrBlocks",
-    "ParameterValue": "10.0.1.0/24"
+    "ParameterKey": "EnableDnsHostnames",
+    "ParameterValue": "true"
   },
   {
-    "ParameterKey": "AvailabilityZones",
+    "ParameterKey": "PublicSubnetCount",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidrBlocks",
+    "ParameterValue": "10.1.1.0/24,10.1.2.0/24"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ1",
     "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ2",
+    "ParameterValue": "us-east-1b"
+  },
+  {
+    "ParameterKey": "MapPublicIpOnLaunch",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCount",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidrBlocks",
+    "ParameterValue": "10.1.11.0/24,10.1.12.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ1",
+    "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ2",
+    "ParameterValue": "us-east-1b"
   },
   {
     "ParameterKey": "EnableNATGateway",
@@ -279,12 +514,142 @@ aws cloudformation update-stack \
     "ParameterValue": "false"
   },
   {
-    "ParameterKey": "PublicSubnetIds",
-    "ParameterValue": "subnet-public-1a"
+    "ParameterKey": "EnableNACLs",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "AllowHTTPFromInternet",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "AllowHTTPSFromInternet",
+    "ParameterValue": "true"
+  }
+]
+```
+
+### Private-Only VPC (Databases/Cache Layer)
+
+```json
+[
+  {
+    "ParameterKey": "ApplicationPrefix",
+    "ParameterValue": "data"
+  },
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "prod"
+  },
+  {
+    "ParameterKey": "VPCCidrBlock",
+    "ParameterValue": "10.2.0.0/16"
+  },
+  {
+    "ParameterKey": "EnableInternetGateway",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "EnableDnsHostnames",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "PublicSubnetCount",
+    "ParameterValue": "0"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidrBlocks",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PrivateSubnetCount",
+    "ParameterValue": "3"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidrBlocks",
+    "ParameterValue": "10.2.1.0/24,10.2.2.0/24,10.2.3.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ1",
+    "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ2",
+    "ParameterValue": "us-east-1b"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ3",
+    "ParameterValue": "us-east-1c"
+  },
+  {
+    "ParameterKey": "EnableNATGateway",
+    "ParameterValue": "false"
   },
   {
     "ParameterKey": "EnableNACLs",
     "ParameterValue": "true"
+  }
+]
+```
+
+### Single-AZ Development Prototype
+
+```json
+[
+  {
+    "ParameterKey": "ApplicationPrefix",
+    "ParameterValue": "poc"
+  },
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "poc"
+  },
+  {
+    "ParameterKey": "VPCCidrBlock",
+    "ParameterValue": "10.3.0.0/16"
+  },
+  {
+    "ParameterKey": "EnableInternetGateway",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "EnableDnsHostnames",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "PublicSubnetCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidrBlocks",
+    "ParameterValue": "10.3.1.0/24"
+  },
+  {
+    "ParameterKey": "PublicSubnetAZ1",
+    "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "MapPublicIpOnLaunch",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidrBlocks",
+    "ParameterValue": "10.3.11.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnetAZ1",
+    "ParameterValue": "us-east-1a"
+  },
+  {
+    "ParameterKey": "EnableNATGateway",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "EnableNACLs",
+    "ParameterValue": "false"
   }
 ]
 ```

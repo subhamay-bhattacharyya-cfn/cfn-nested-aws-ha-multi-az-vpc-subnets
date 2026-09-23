@@ -34,13 +34,14 @@ jobs:
   setup-environment:
     name: Setup Environment Variables
     runs-on: ubuntu-latest
-    environment: devl
+    environment: ${{ inputs.environment }}
+    env:
+      AWS_ENVIRONMENT: ${{ vars.AWS_ENVIRONMENT }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      AWS_OIDC_ROLE_NAME: ${{ vars.AWS_OIDC_ROLE_NAME }}
+      CFN_TEMPLATES_S3_BUCKET: ${{ vars.CFN_TEMPLATES_S3_BUCKET }}
     outputs:
-      environment: ${{ steps.set-env.outputs.environment }}
-      aws-region: ${{ steps.set-env.outputs.aws-region }}
-      aws-account-id: ${{ steps.set-env.outputs.aws-account-id }}
-      oidc-role-name: ${{ steps.set-env.outputs.oidc-role-name }}
-      s3-bucket: ${{ steps.set-env.outputs.s3-bucket }}
       stack-name: ${{ steps.set-stack-name.outputs.stack-name }}
     steps:
       - name: Set stack name based on stack type
@@ -89,17 +90,17 @@ jobs:
           echo "aws-region=${{ vars.AWS_REGION }}" >> $GITHUB_OUTPUT
           echo "aws-account-id=${{ vars.AWS_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
           echo "oidc-role-name=${{ vars.AWS_OIDC_ROLE_NAME }}" >> $GITHUB_OUTPUT
-          echo "s3-bucket=${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}" >> $GITHUB_OUTPUT
+          echo "s3-bucket=${{ vars.CFN_TEMPLATES_S3_BUCKET }}" >> $GITHUB_OUTPUT
 
           echo "## Environment Configuration" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Variable | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Environment | \`${{ vars.AWS_ENVIRONMENT }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS Region | \`${{ vars.AWS_REGION }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS Account ID | \`${{ vars.AWS_ACCOUNT_ID }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| AWS OIDC Role Name | \`${{ vars.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Nested Templates S3 Bucket Name | \`${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | \`${{ env.AWS_ENVIRONMENT }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AWS Region | \`${{ env.AWS_REGION }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AWS Account ID | \`${{ env.AWS_ACCOUNT_ID }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| AWS OIDC Role Name | \`${{ env.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Nested Templates S3 Bucket Name | \`${{ env.CFN_TEMPLATES_S3_BUCKET }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Stack Name | \`${{ steps.set-stack-name.outputs.stack-name }}\` |" >> $GITHUB_STEP_SUMMARY
 
   delete-vpc-subnet-stack:
@@ -107,9 +108,5 @@ jobs:
     needs: setup-environment
     uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@feature/GHA-0001-initial-release-cloudform
     with:
-      environment: ${{ needs.setup-environment.outputs.environment }}
-      concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
-      aws-region: ${{ needs.setup-environment.outputs.aws-region }}
-      aws-account-id: ${{ needs.setup-environment.outputs.aws-account-id }}
-      oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
+      environment: ${{ inputs.environment }}
       stack-name: ${{ needs.setup-environment.outputs.stack-name }}
