@@ -3,13 +3,13 @@ description: Deploy CloudFormation VPC Subnet Stack run by {{ github.actor }}
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - feature/**
-  #     - bug/**
-  #   paths:
-  #     - 'templates/**'
-  #     - .github/workflows/ci.yaml
+  push:
+    branches:
+      - feature/**
+      - bug/**
+    paths:
+      - 'templates/**'
+      - .github/workflows/ci.yaml
 
 
 permissions:
@@ -21,7 +21,7 @@ jobs:
   setup-environment:
     name: Setup Environment Variables
     runs-on: ubuntu-latest
-    environment: devl
+    environment: ci
     outputs:
       environment: ${{ steps.set-env.outputs.environment }}
       aws-region: ${{ steps.set-env.outputs.aws-region }}
@@ -53,7 +53,7 @@ jobs:
   vpc-subnet-stack:
     name: Create VPC Subnet Stack
     needs: setup-environment
-    uses: subhamay-bhattacharyya-gha/cfn-deploy-wf/.github/workflows/cfn-deploy.yaml@v1.2.0
+    uses: subhamay-bhattacharyya-gha/cfn-deploy-wf/.github/workflows/cfn-deploy.yaml@feature/GHA-0016-upgrade-cfn-deploy-action
     with:
       environment: ${{ needs.setup-environment.outputs.environment }}
       concurrency-group: ${{ github.workflow }}-${{ needs.setup-environment.outputs.environment }}
