@@ -25,7 +25,7 @@ permissions:
 
 
 jobs:
-  ci-build:
+  ci:
     uses: subhamay-bhattacharyya-gha/cfn-ci-build-reusable-wf/.github/workflows/ci.yaml@feature/GHA-0001-implement-ci-build-reusab
     with:
       environment: "ci"
