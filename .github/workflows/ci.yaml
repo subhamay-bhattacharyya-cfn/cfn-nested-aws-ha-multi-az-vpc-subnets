@@ -17,11 +17,14 @@ on:
       - 'templates/**'
       - .github/workflows/ci.yaml
 
+env:
+  environment: ci
 
 permissions:
   actions: write
   contents: read
   id-token: write
+
 
 
 jobs:
