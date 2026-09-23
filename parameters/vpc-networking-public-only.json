@@ -1,0 +1,23 @@
+{
+  "ApplicationPrefix": "web",
+  "EnvironmentName": "dev",
+  "VPCCidrBlock": "10.2.0.0/16",
+  "EnableInternetGateway": "true",
+  "EnableDnsHostnames": "true",
+  "PublicSubnetCount": "1",
+  "PublicSubnetCidrBlocks": "10.2.1.0/24",
+  "PublicSubnetAZ1": "us-east-1a",
+  "PublicSubnetAZ2": "us-east-1b",
+  "PublicSubnetAZ3": "us-east-1c",
+  "PublicSubnetAZ4": "us-east-1d",
+  "MapPublicIpOnLaunch": "true",
+  "PrivateSubnetCount": "1",
+  "PrivateSubnetCidrBlocks": "10.2.10.0/24",
+  "PrivateSubnetAZ1": "us-east-1a",
+  "PrivateSubnetAZ2": "us-east-1b",
+  "PrivateSubnetAZ3": "us-east-1c",
+  "PrivateSubnetAZ4": "us-east-1d",
+  "EnableNATGateway": "false",
+  "EnableHighAvailabilityNAT": "false",
+  "EnableNACLs": "true"
+}

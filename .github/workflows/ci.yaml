@@ -3,13 +3,13 @@ description: Deploy CloudFormation VPC Subnet Stack run by {{ github.actor }}
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/**
-      - bug/**
-    paths:
-      - 'templates/**'
-      - .github/workflows/ci.yaml
+  # push:
+  #   branches:
+  #     - feature/**
+  #     - bug/**
+  #   paths:
+  #     - 'templates/**'
+  #     - .github/workflows/ci.yaml
 
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
           echo "aws-account-id=${{ vars.AWS_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
           echo "oidc-role-name=${{ vars.AWS_OIDC_ROLE_NAME }}" >> $GITHUB_OUTPUT
           echo "s3-bucket=${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}" >> $GITHUB_OUTPUT
-          echo "stack-name=aws-ha-multi-az-vpc-subnets-stack" >> $GITHUB_OUTPUT
+          echo "stack-name=app-multi-tier-vpc-ci-stack" >> $GITHUB_OUTPUT
 
           echo "## Environment Configuration" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -62,7 +62,7 @@ jobs:
       oidc-role-name: ${{ needs.setup-environment.outputs.oidc-role-name }}
       cfn-templates-s3-bucket: ${{ needs.setup-environment.outputs.s3-bucket }}
       stack-name: ${{ needs.setup-environment.outputs.stack-name }}
-      parameters-file: parameters/vpc-single-private-subnet-cfn.json
+      parameters-file: parameters/vpc-networking-private-public-subnates.json
       template-file: templates/vpc-networking.yaml
 
   delete-vpc-subnet-stack:

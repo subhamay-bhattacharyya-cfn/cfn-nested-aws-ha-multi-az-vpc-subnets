@@ -13,10 +13,16 @@ on:
         required: true
         type: choice
         options:
-          - vpc-single-private-subnet
-          - vpc-single-public-subnet
-          - vpc-two-public-private-subnets
-          - vpc-two-public-four-private-subnets
+          - core-vpc-minimal
+          - isolated-backend-vpc
+          - web-public-tier-vpc
+          - app-multi-tier-vpc
+          - ha-multi-az-vpc
+          - app-2az-ha-nat
+          - private-2az
+          - web-2az
+          - app-3az-single-nat
+          - ha-4az
 
 
 permissions:
@@ -36,26 +42,58 @@ jobs:
       oidc-role-name: ${{ steps.set-env.outputs.oidc-role-name }}
       s3-bucket: ${{ steps.set-env.outputs.s3-bucket }}
       stack-name: ${{ steps.set-stack-name.outputs.stack-name }}
+      parameters-file: ${{ steps.set-stack-name.outputs.parameters-file }}
+      template-file: ${{ steps.set-stack-name.outputs.template-file }}
     steps:
 
       - name: Set stack name based on stack type
         id: set-stack-name
         run: |
+          echo "template-file=templates/vpc-networking.yaml" >> $GITHUB_OUTPUT
           case "${{ github.event.inputs.stack-type }}" in
-            vpc-single-private-subnet)
-              echo "stack-name=vpc-with-one-pvt-subnet-stack" >> $GITHUB_OUTPUT
+            core-vpc-minimal)
+              echo "stack-name=core-vpc-minimal-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-vpc-only.json" >> $GITHUB_OUTPUT
               ;;
-            vpc-single-public-subnet)
-              echo "stack-name=vpc-with-one-public-subnet-stack" >> $GITHUB_OUTPUT
+            isolated-backend-vpc)
+              echo "stack-name=isolated-backend-vpc-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-private-only.json" >> $GITHUB_OUTPUT
               ;;
-            vpc-two-public-private-subnets)
-              echo "stack-name=vpc-with-two-public-private-subnets-stack" >> $GITHUB_OUTPUT
+            web-public-tier-vpc)
+              echo "stack-name=web-public-tier-vpc-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-public-only.json" >> $GITHUB_OUTPUT
               ;;
-            vpc-two-public-four-private-subnets)
-              echo "stack-name=vpc-with-two-public-four-private-subnets-stack" >> $GITHUB_OUTPUT
+            app-multi-tier-vpc)
+              echo "stack-name=app-multi-tier-vpc-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-private-public-subnates.json" >> $GITHUB_OUTPUT
+              ;;
+            ha-multi-az-vpc)
+              echo "stack-name=ha-multi-az-vpc-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-multi-az-ha.json" >> $GITHUB_OUTPUT
+              ;;
+            app-2az-ha-nat)
+              echo "stack-name=app-2az-ha-nat-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-app-2az-ha-nat.json" >> $GITHUB_OUTPUT
+              ;;
+            private-2az)
+              echo "stack-name=private-2az-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-private-2az.json" >> $GITHUB_OUTPUT
+              ;;
+            web-2az)
+              echo "stack-name=web-2az-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-web-2az.json" >> $GITHUB_OUTPUT
+              ;;
+            app-3az-single-nat)
+              echo "stack-name=app-3az-single-nat-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-app-3az-single-nat.json" >> $GITHUB_OUTPUT
+              ;;
+            ha-4az)
+              echo "stack-name=ha-4az-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-ha-4az.json" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "stack-name=vpc-stack" >> $GITHUB_OUTPUT
+              echo "parameters-file=parameters/vpc-networking-private-public-subnates.json" >> $GITHUB_OUTPUT
               ;;
           esac
 
@@ -78,6 +116,8 @@ jobs:
           echo "| AWS OIDC Role Name | ${{ vars.AWS_OIDC_ROLE_NAME }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Nested Templates S3 Bucket Name | ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Stack Name | ${{ steps.set-stack-name.outputs.stack-name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameters File | ${{ steps.set-stack-name.outputs.parameters-file }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Template File | ${{ steps.set-stack-name.outputs.template-file }} |" >> $GITHUB_STEP_SUMMARY
 
   vpc-subnet-stack:
     name: VPC Subnet Stack
@@ -91,3 +131,5 @@ jobs:
       oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
       cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
       stack-name: ${{ needs.setup-environment.outputs.stack-name }}
+      parameters-file: ${{ needs.setup-environment.outputs.parameters-file }}
+      template-file: ${{ needs.setup-environment.outputs.template-file }}

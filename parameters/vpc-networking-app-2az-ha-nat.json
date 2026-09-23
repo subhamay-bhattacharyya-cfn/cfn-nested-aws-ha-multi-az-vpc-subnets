@@ -1,0 +1,23 @@
+{
+  "ApplicationPrefix": "app-2az",
+  "EnvironmentName": "staging",
+  "VPCCidrBlock": "10.5.0.0/16",
+  "EnableInternetGateway": "true",
+  "EnableDnsHostnames": "true",
+  "PublicSubnetCount": "2",
+  "PublicSubnetCidrBlocks": "10.5.1.0/24,10.5.2.0/24",
+  "PublicSubnetAZ1": "us-east-1a",
+  "PublicSubnetAZ2": "us-east-1b",
+  "PublicSubnetAZ3": "us-east-1c",
+  "PublicSubnetAZ4": "us-east-1d",
+  "MapPublicIpOnLaunch": "true",
+  "PrivateSubnetCount": "2",
+  "PrivateSubnetCidrBlocks": "10.5.10.0/24,10.5.11.0/24",
+  "PrivateSubnetAZ1": "us-east-1a",
+  "PrivateSubnetAZ2": "us-east-1b",
+  "PrivateSubnetAZ3": "us-east-1c",
+  "PrivateSubnetAZ4": "us-east-1d",
+  "EnableNATGateway": "true",
+  "EnableHighAvailabilityNAT": "true",
+  "EnableNACLs": "true"
+}

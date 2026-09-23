@@ -1,0 +1,23 @@
+{
+  "ApplicationPrefix": "app-3az",
+  "EnvironmentName": "prod",
+  "VPCCidrBlock": "10.8.0.0/16",
+  "EnableInternetGateway": "true",
+  "EnableDnsHostnames": "true",
+  "PublicSubnetCount": "3",
+  "PublicSubnetCidrBlocks": "10.8.1.0/24,10.8.2.0/24,10.8.3.0/24",
+  "PublicSubnetAZ1": "us-east-1a",
+  "PublicSubnetAZ2": "us-east-1b",
+  "PublicSubnetAZ3": "us-east-1c",
+  "PublicSubnetAZ4": "us-east-1d",
+  "MapPublicIpOnLaunch": "true",
+  "PrivateSubnetCount": "3",
+  "PrivateSubnetCidrBlocks": "10.8.10.0/24,10.8.11.0/24,10.8.12.0/24",
+  "PrivateSubnetAZ1": "us-east-1a",
+  "PrivateSubnetAZ2": "us-east-1b",
+  "PrivateSubnetAZ3": "us-east-1c",
+  "PrivateSubnetAZ4": "us-east-1d",
+  "EnableNATGateway": "true",
+  "EnableHighAvailabilityNAT": "false",
+  "EnableNACLs": "true"
+}

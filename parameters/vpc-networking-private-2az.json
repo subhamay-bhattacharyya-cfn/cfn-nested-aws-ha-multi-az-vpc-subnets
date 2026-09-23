@@ -1,0 +1,23 @@
+{
+  "ApplicationPrefix": "data-2az",
+  "EnvironmentName": "prod",
+  "VPCCidrBlock": "10.6.0.0/16",
+  "EnableInternetGateway": "false",
+  "EnableDnsHostnames": "true",
+  "PublicSubnetCount": "0",
+  "PublicSubnetCidrBlocks": "",
+  "PublicSubnetAZ1": "us-east-1a",
+  "PublicSubnetAZ2": "us-east-1b",
+  "PublicSubnetAZ3": "us-east-1c",
+  "PublicSubnetAZ4": "us-east-1d",
+  "MapPublicIpOnLaunch": "false",
+  "PrivateSubnetCount": "2",
+  "PrivateSubnetCidrBlocks": "10.6.10.0/24,10.6.11.0/24",
+  "PrivateSubnetAZ1": "us-east-1a",
+  "PrivateSubnetAZ2": "us-east-1b",
+  "PrivateSubnetAZ3": "us-east-1c",
+  "PrivateSubnetAZ4": "us-east-1d",
+  "EnableNATGateway": "false",
+  "EnableHighAvailabilityNAT": "false",
+  "EnableNACLs": "true"
+}
