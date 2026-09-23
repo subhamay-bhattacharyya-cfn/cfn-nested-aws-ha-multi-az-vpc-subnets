@@ -52,7 +52,7 @@ jobs:
       # aws-region: ${{ vars.AWS_REGION }}
       # aws-account-id: ${{ vars.AWS_ACCOUNT_ID }}
       # oidc-role-name: ${{ vars.AWS_OIDC_ROLE_NAME }}
-      cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
+      # cfn-templates-s3-bucket: ${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}
       stack-name: vpc-networking-vpc-only
       template-file: templates/vpc-subnets.yaml
       parameters-file: parameters/vpc-networking-vpc-only.json
