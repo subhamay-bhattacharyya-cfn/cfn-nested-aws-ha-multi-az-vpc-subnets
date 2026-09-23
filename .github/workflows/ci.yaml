@@ -17,16 +17,13 @@ on:
       - 'templates/**'
       - .github/workflows/ci.yaml
 
-# env:
-#   environment: ci
-
 permissions:
   actions: write
   contents: read
   id-token: write
 
 jobs:
-  ci-build:
+  ci:
     name: CI Build
     uses: subhamay-bhattacharyya-gha/cfn-ci-build-reusable-wf/.github/workflows/ci.yaml@feature/GHA-0001-implement-ci-build-reusab
     with:
