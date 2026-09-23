@@ -23,7 +23,7 @@ permissions:
   id-token: write
 
 jobs:
-  ci-build-1:
+  ci-build:
     name: CI Build
     uses: subhamay-bhattacharyya-gha/cfn-ci-build-reusable-wf/.github/workflows/ci.yaml@feature/GHA-0001-implement-ci-build-reusab
     with:
