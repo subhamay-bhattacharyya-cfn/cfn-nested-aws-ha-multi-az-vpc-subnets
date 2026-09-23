@@ -42,7 +42,7 @@ jobs:
           echo "| AWS_OIDC_ROLE_NAME | \`${{ vars.AWS_OIDC_ROLE_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| CFN_NESTED_TEMPLATES_S3_BUCKET_NAME | \`${{ vars.CFN_NESTED_TEMPLATES_S3_BUCKET_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
 
-  ci-build:
+  ci:
     name: CI Build
     # environment: ci
     needs: print-env
