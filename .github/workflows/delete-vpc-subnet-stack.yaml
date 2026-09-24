@@ -106,7 +106,7 @@ jobs:
   delete-vpc-subnet-stack:
     name: Cleanup VPC Subnet Stack
     needs: setup-environment
-    uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@feature/GHA-0001-initial-release-cloudform
+    uses: subhamay-bhattacharyya-gha/cfn-delete-wf/.github/workflows/cfn-delete.yaml@v1.0.0
     with:
       environment: ${{ inputs.environment }}
       stack-name: ${{ needs.setup-environment.outputs.stack-name }}
