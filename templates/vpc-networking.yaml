@@ -49,7 +49,7 @@ Parameters:
   PublicSubnetCidrBlocks:
     Type: CommaDelimitedList
     Description: CIDR blocks for public subnets (optional, required only if PublicSubnetCount > 0)
-    Default: ''
+    Default: '0.0.0.0/32,0.0.0.0/32,0.0.0.0/32,0.0.0.0/32'
 
   PublicSubnetAZ1:
     Type: String
@@ -98,7 +98,7 @@ Parameters:
   PrivateSubnetCidrBlocks:
     Type: CommaDelimitedList
     Description: CIDR blocks for private subnets (optional, required only if PrivateSubnetCount > 0)
-    Default: ''
+    Default: '0.0.0.0/32,0.0.0.0/32,0.0.0.0/32,0.0.0.0/32'
 
   PrivateSubnetAZ1:
     Type: String
