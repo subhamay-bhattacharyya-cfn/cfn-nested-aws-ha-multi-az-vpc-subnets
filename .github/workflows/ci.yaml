@@ -30,7 +30,8 @@ jobs:
       environment: ci
       stack-name: vpc-networking-vpc-only
       template-file: templates/vpc-networking.yaml
-      parameters-file: parameters/vpc-networking-vpc-only.json
+      # parameters-file: parameters/vpc-networking-vpc-only.json
+      parameters-file: parameters/vpc-networking-private-only.json
 
 # ============================================================================
   # Generate Change Log
