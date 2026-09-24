@@ -31,7 +31,8 @@ jobs:
       stack-name: vpc-networking-vpc-only
       template-file: templates/vpc-networking.yaml
       # parameters-file: parameters/vpc-networking-vpc-only.json
-      parameters-file: parameters/vpc-networking-private-only.json
+      # parameters-file: parameters/vpc-networking-private-only.json
+      parameters-file: parameters/vpc-networking-public-only.json
 
 # ============================================================================
   # Generate Change Log
@@ -44,7 +45,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
