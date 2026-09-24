@@ -1,10 +1,42 @@
-{
-  "ApplicationPrefix": "core",
-  "EnvironmentName": "devl",
-  "VPCCidrBlock": "10.0.0.0/16",
-  "EnableInternetGateway": "false",
-  "EnableDnsHostnames": "true",
-  "PublicSubnetCount": "0",
-  "MapPublicIpOnLaunch": "false",
-  "PrivateSubnetCount": "0"
-}
+[
+  {
+    "ParameterKey": "ApplicationPrefix",
+    "ParameterValue": "core"
+  },
+  {
+    "ParameterKey": "EnvironmentName",
+    "ParameterValue": "devl"
+  },
+  {
+    "ParameterKey": "VPCCidrBlock",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "EnableInternetGateway",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "EnableDnsHostnames",
+    "ParameterValue": "true"
+  },
+  {
+    "ParameterKey": "PublicSubnetCount",
+    "ParameterValue": "0"
+  },
+  {
+    "ParameterKey": "MapPublicIpOnLaunch",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCount",
+    "ParameterValue": "0"
+  },
+  {
+    "ParameterKey": "EnableNATGateway",
+    "ParameterValue": "false"
+  },
+  {
+    "ParameterKey": "EnableHighAvailabilityNAT",
+    "ParameterValue": "false"
+  }
+]

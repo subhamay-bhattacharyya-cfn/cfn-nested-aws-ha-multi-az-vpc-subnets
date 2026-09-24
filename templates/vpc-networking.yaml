@@ -48,23 +48,28 @@ Parameters:
 
   PublicSubnetCidrBlocks:
     Type: CommaDelimitedList
-    Description: CIDR blocks for public subnets
+    Description: CIDR blocks for public subnets (optional, required only if PublicSubnetCount > 0)
+    Default: ''
 
   PublicSubnetAZ1:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Public Subnet 1
+    Type: String
+    Description: Availability Zone for Public Subnet 1 (optional, required only if PublicSubnetCount > 0)
+    Default: ''
 
   PublicSubnetAZ2:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Public Subnet 2
+    Type: String
+    Description: Availability Zone for Public Subnet 2 (optional, required only if PublicSubnetCount > 0)
+    Default: ''
 
   PublicSubnetAZ3:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Public Subnet 3
+    Type: String
+    Description: Availability Zone for Public Subnet 3 (optional, required only if PublicSubnetCount > 0)
+    Default: ''
 
   PublicSubnetAZ4:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Public Subnet 4
+    Type: String
+    Description: Availability Zone for Public Subnet 4 (optional, required only if PublicSubnetCount > 0)
+    Default: ''
 
   MapPublicIpOnLaunch:
     Type: String
@@ -86,33 +91,39 @@ Parameters:
 
   PrivateSubnetCount:
     Type: Number
-    Description: Number of private subnets to create
-    MinValue: 1
+    Description: Number of private subnets to create (0 for VPC-only deployment)
+    MinValue: 0
     MaxValue: 4
 
   PrivateSubnetCidrBlocks:
     Type: CommaDelimitedList
-    Description: CIDR blocks for private subnets
+    Description: CIDR blocks for private subnets (optional, required only if PrivateSubnetCount > 0)
+    Default: ''
 
   PrivateSubnetAZ1:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Private Subnet 1
+    Type: String
+    Description: Availability Zone for Private Subnet 1 (optional, required only if PrivateSubnetCount > 0)
+    Default: ''
 
   PrivateSubnetAZ2:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Private Subnet 2
+    Type: String
+    Description: Availability Zone for Private Subnet 2 (optional, required only if PrivateSubnetCount > 0)
+    Default: ''
 
   PrivateSubnetAZ3:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Private Subnet 3
+    Type: String
+    Description: Availability Zone for Private Subnet 3 (optional, required only if PrivateSubnetCount > 0)
+    Default: ''
 
   PrivateSubnetAZ4:
-    Type: AWS::EC2::AvailabilityZone::Name
-    Description: Availability Zone for Private Subnet 4
+    Type: String
+    Description: Availability Zone for Private Subnet 4 (optional, required only if PrivateSubnetCount > 0)
+    Default: ''
 
   EnableNATGateway:
     Type: String
     Description: Enable NAT Gateway for internet egress
+    Default: 'false'
     AllowedValues:
       - 'true'
       - 'false'
@@ -120,6 +131,7 @@ Parameters:
   EnableHighAvailabilityNAT:
     Type: String
     Description: Create one NAT Gateway per AZ (requires NAT enabled)
+    Default: 'false'
     AllowedValues:
       - 'true'
       - 'false'
